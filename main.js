@@ -125,13 +125,14 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     return;
   }
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
   const $ = s => document.querySelector(s);
   const C = { deep:"#14213D", nile:"#1D5C63", terracotta:"#8C3B2E", lapis:"#2C3E8F", sand:"#8F5319", emerald:"#2E6A55", plum:"#6A2E6B" };
   const stage = $("#stage");
 
   /* smooth scroll */
-  const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+  const lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 1 });
   window.__lenis = lenis;
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));

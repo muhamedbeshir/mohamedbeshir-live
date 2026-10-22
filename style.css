@@ -427,3 +427,8 @@ html.rm .work-prog{display:none}
 .squig{top:74%}
 .hi-laptop{top:9%;width:clamp(100px,10vw,150px)}.hi-tea{top:12%}
 @media (max-width:720px){.hi-line{font-size:min(17vw,14vh)}.squig{top:68%;width:50vw}.hi-laptop{top:12%;width:110px}}
+
+/* lighter compositing: fewer full-screen blend layers keeps scroll at 60fps */
+.grain .g3{display:none}
+@media (pointer:coarse),(max-width:900px){.grain .g2{display:none}.grain .g1{mix-blend-mode:normal;opacity:.12}.dust{opacity:.8}}
+html{overscroll-behavior:none}
