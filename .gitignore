@@ -1,0 +1,16 @@
+# Local previews and generated review files
+audit_shots/
+font_test.html
+rendered.png
+settled.png
+*.log
+
+# Local dependencies and environment files
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Operating system files
+.DS_Store
+Thumbs.db
