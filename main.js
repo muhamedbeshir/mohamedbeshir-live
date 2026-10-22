@@ -37,8 +37,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
   }
   document.querySelectorAll("[data-amp]").forEach(amp);
 
-  /* background music: browsers only allow sound after a click, tap or key press,
-     so it starts on the first one (unless the visitor has turned it off) and loops without a seam */
+  /* background music: off by default, starts only when the visitor presses the sound button */
   (function music(){
     const btn = document.getElementById("sound"), label = btn.querySelector(".sound-label");
     const SRC = "audio/interactive-playground.mp3", VOL = 0.45;
@@ -48,8 +47,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     const audio = new Audio(SRC);
     audio.loop = true; audio.preload = "auto"; audio.volume = 0;
     let ctx = null, gain = null, bufSrc = null, mode = "stream";
-    let playing = false, wanted = true, started = false, fade, check;
-    btn.classList.add("invite");
+    let playing = false, wanted = false, started = false, fade, check;
     const AC = window.AudioContext || window.webkitAudioContext;
     function unlock(){ /* create or resume Web Audio inside the gesture, ready for the fallback */
       if (!AC) return;
@@ -109,17 +107,6 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
       e.stopPropagation();
       if (playing) { wanted = false; stop(); } else { wanted = true; play(); }
     });
-    /* on by default: try straight away, and otherwise start on the first click, tap or key press */
-    const GESTURES = ["pointerdown", "pointerup", "click", "keydown", "touchend"];
-    const off = () => GESTURES.forEach(n => window.removeEventListener(n, first, true));
-    const first = e => {
-      if (e.target.closest && e.target.closest("#sound")) { off(); return; }
-      if (wanted && !started) play();
-      if (started) off();
-    };
-    GESTURES.forEach(n => window.addEventListener(n, first, true));
-    const auto = audio.play();
-    if (auto && auto.then) auto.then(() => { if (started) return; playing = true; started = true; ui(); ramp(VOL, 1400); off(); }).catch(() => {});
     document.addEventListener("visibilitychange", () => {
       if (document.hidden){ if (mode === "webaudio" && ctx) ctx.suspend(); else audio.pause(); return; }
       if (!playing) return;
@@ -140,7 +127,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
   gsap.registerPlugin(ScrollTrigger);
 
   const $ = s => document.querySelector(s);
-  const C = { deep:"#2A2650", turmeric:"#545388", hibiscus:"#7B3F6E", monsoon:"#3E5591", backwater:"#2B6468", leaf:"#4C6230", kokum:"#8A3D4E" };
+  const C = { deep:"#14213D", nile:"#1D5C63", terracotta:"#8C3B2E", lapis:"#2C3E8F", sand:"#8F5319", emerald:"#2E6A55", plum:"#6A2E6B" };
   const stage = $("#stage");
 
   /* smooth scroll */
@@ -352,7 +339,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     .fromTo(tunnel, { scaleX: 0.3, scaleY: 0.08, autoAlpha: 0 }, { scaleX: 1.4, scaleY: 1.4, autoAlpha: 1, duration: 0.6, ease: "power1.in" }, 0.6)
     .to(tunnel, { scale: 9, duration: 0.7, ease: "power2.in" }, 1.1)
     .to(tunnel, { autoAlpha: 0, duration: 0.25 }, 1.6)
-    .to(stage, { "--bg": C.hibiscus, duration: 1.2 }, 0.5)
+    .to(stage, { "--bg": C.terracotta, duration: 1.2 }, 0.5)
 
   // 1.8 to 4.6: hello
     .set("#hello", { autoAlpha: 1 }, 1.75)
@@ -364,9 +351,11 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     .addLabel("hello", 2.9)
     .to("#hello .doodles", { scale: 1.6, autoAlpha: 0, duration: 0.6, ease: "power2.in" }, 3.6)
     .fromTo("#hiCap", { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.4 }, 2.6)
+    .fromTo(".hi-laptop, .hi-tea", { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 0.9, duration: 0.5, stagger: 0.12, ease: "back.out(1.4)" }, 2.3)
+    .to(".hi-laptop, .hi-tea", { autoAlpha: 0, duration: 0.3 }, 3.6)
     .to("#hiCap", { autoAlpha: 0, duration: 0.3 }, 3.6)
     .to("#hiLine", { scale: 8, autoAlpha: 0, transformOrigin: "46% 55%", duration: 1.0, ease: "power2.in" }, 3.6)
-    .to(stage, { "--bg": C.monsoon, duration: 1.0 }, 3.9)
+    .to(stage, { "--bg": C.lapis, duration: 1.0 }, 3.9)
     .set("#hello", { autoAlpha: 0 }, 4.65)
 
   // 4.6 to 8: systems, tokens assemble into a component
@@ -379,7 +368,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     const a = (i / sws.length) * Math.PI * 2 + 0.6;
     tl.fromTo(s,
       { x: () => Math.cos(a) * W() * 0.45, y: () => Math.sin(a) * window.innerHeight * 0.45, scale: 0.4, autoAlpha: 0 },
-      { x: () => -150 + i * 34, y: () => -4, scale: 0.62, autoAlpha: 1, duration: 0.9, ease: "power3.out" }, 5.2 + i * 0.05);
+      { x: () => -150 + i * 34 + 40, y: () => 150, scale: 0.62, autoAlpha: 1, duration: 0.9, ease: "power3.out" }, 5.2 + i * 0.05);
   });
   tl.fromTo("#card", { scale: 0.6, autoAlpha: 0, rotate: 4 }, { scale: 1, autoAlpha: 1, rotate: 0, duration: 0.5, ease: "back.out(1.4)" }, 6.0)
     .to("#sysWord", { autoAlpha: 0.22, duration: 0.5 }, 6.0)
@@ -406,7 +395,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     .to("#based .doodles", { yPercent: 30, autoAlpha: 0, duration: 0.5, ease: "power2.in" }, 10.3)
     .to("#basedText > span", { xPercent: -70, autoAlpha: 0, duration: 0.6, stagger: 0.1, ease: "power2.in" }, 10.2)
     .to("#basedCap", { autoAlpha: 0, duration: 0.3 }, 10.2)
-    .to(stage, { "--bg": C.leaf, duration: 0.8 }, 10.3)
+    .to(stage, { "--bg": C.emerald, duration: 0.8 }, 10.3)
     .set("#based", { autoAlpha: 0 }, 10.95)
 
   // 10.9 to 15.9: work, a horizontal run of frames
@@ -417,8 +406,9 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     .fromTo(["#pl", "#pr"], { x: 0 }, { x: 4, duration: 0.3 }, 11.6)
     .addLabel("work", 11.5)
     .to("#track", { x: () => -(document.querySelector("#track").scrollWidth - stage.clientWidth), duration: 3.6, ease: "power1.inOut" }, 11.7)
+    .fromTo("#workProg", { scaleX: 0.05 }, { scaleX: 1, duration: 3.6, ease: "power1.inOut" }, 11.7)
     .to("#work", { yPercent: -18, autoAlpha: 0, duration: 0.5, ease: "power2.in" }, 15.4)
-    .to(stage, { "--bg": C.kokum, duration: 0.8 }, 15.5)
+    .to(stage, { "--bg": C.plum, duration: 0.8 }, 15.5)
 
   // 15.9 to 18: about
     .set("#about", { autoAlpha: 1 }, 15.85)
@@ -436,7 +426,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
     .fromTo("#dream", { autoAlpha: 0, scale: 0.6, rotation: -20 }, { autoAlpha: 1, scale: 1, rotation: -7, duration: 0.45, ease: "back.out(2)", immediateRender: false }, 19.45)
     /* on shorter phones the birds sit where the sign lands, so they fly off as it arrives */
     .fromTo("#birds", { opacity: 1 }, { opacity: () => tightPhone ? 0 : 1, duration: 0.3, immediateRender: false }, 19.4)
-    .to(stage, { "--bg": C.turmeric, duration: 0.9 }, 17.9)
+    .to(stage, { "--bg": C.nile, duration: 0.9 }, 17.9)
     .fromTo(tunnel, { scale: 9, autoAlpha: 0 }, { scale: 1.2, autoAlpha: 1, duration: 0.9, ease: "power2.out", immediateRender: false }, 17.9)
     .to(tunnel, { scale: 0.42, autoAlpha: 0, duration: 0.5 }, 18.8)
     /* zoom back out of the head. Scale and opacity are separate: the character stays invisible while he is
@@ -450,7 +440,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
 
   /* beliefs: a manifesto chapter slotted in after Systems */
   (function beliefs(){
-    const S = 7.95, M = 9.3;
+    const S = 7.95, M = 7.9;
     tl.shiftChildren(M, true, 7.94);
     // split the belief headlines into words so they can rise in sequence
     document.querySelectorAll(".bl-b h3").forEach(h => {
@@ -467,16 +457,16 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
       .to("#blA", { y: -50, autoAlpha: 0, duration: 0.3, ease: "power2.in" }, S + 1.0);
     // B: four beliefs, one screen each
     ["#blB1", "#blB2", "#blB3", "#blB4"].forEach((id, k) => {
-      const t = S + 1.3 + k * 1.0;
+      const t = S + 1.3 + k * 0.72;
       tl.set(id, { autoAlpha: 1 }, t)
         .fromTo(id + " h3 .w", { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, stagger: 0.018, ease: "power3.out" }, t)
         .fromTo(id + " p:not(.bl-kick)", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3 }, t + 0.2);
       if (id === "#blB4") tl.fromTo("#blB4 .bl-kick", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3 }, t + 0.4);
-      tl.to(id, { y: -40, autoAlpha: 0, duration: 0.25, ease: "power2.in" }, t + 0.78);
+      tl.to(id, { y: -40, autoAlpha: 0, duration: 0.22, ease: "power2.in" }, t + 0.55);
     });
     tl.addLabel("beliefs", S + 1.5);
     // C: what I don't believe in, and what I do
-    const c = S + 5.4;
+    const c = S + 4.2;
     tl.set("#blC", { autoAlpha: 1 }, c)
       .fromTo(".bl-c .c1", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, c)
       .fromTo(".bl-c .c2", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.6)" }, c + 0.35)
@@ -484,14 +474,14 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
       .fromTo(".bl-c .c3", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, c + 1.0)
       .to("#blC", { y: -40, autoAlpha: 0, duration: 0.3, ease: "power2.in" }, c + 1.85);
     // D: the invitation
-    const d = S + 7.6;
+    const d = S + 6.3;
     tl.set("#blD", { autoAlpha: 1 }, d)
       .fromTo(".bl-d h2", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, d)
       .fromTo(".bl-d p:not(.bl-open)", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, d + 0.25)
       .fromTo(".bl-open", { y: 20, opacity: 0 }, { y: 0, opacity: 0.85, duration: 0.35 }, d + 0.4)
       .fromTo("#blD .ddp", { scale: 0, rotation: () => gsap.utils.random(-30, 30) }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)", stagger: { each: 0.05, from: "random" } }, d + 0.1)
       .to("#blD", { y: -40, autoAlpha: 0, duration: 0.3, ease: "power2.in" }, d + 1.3)
-      .to(stage, { "--bg": C.backwater, duration: 0.6 }, S + M - 0.6)
+      .to(stage, { "--bg": C.sand, duration: 0.6 }, S + M - 0.6)
       .set("#beliefs", { autoAlpha: 0 }, S + M - 0.05);
   })();
 
@@ -520,7 +510,7 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
       gsap.to(cursor, { x: m.left - n.left + m.width * 0.8, y: m.top - n.top + m.height * 0.55, duration: 0.8, ease: "power3.inOut" });
     } else if (p < 0.94 && handed){
       handed = false;
-      $("#cursorLabel").textContent = "Mohamed";
+      $("#cursorLabel").textContent = "Mohamed Beshir";
       if (idleTween) idleTween.restart(); else idle();
     }
   }
@@ -650,26 +640,6 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
   });
   const deep = fromHash();
   if (deep && !(deep.dataset.download && smallScreen())) open(deep, true);
-
-  /* on phones, suggest a bigger screen once per visit */
-  const notice = document.getElementById("notice");
-  const seen = () => { try { return sessionStorage.getItem("lucid-notice") === "1"; } catch (_) { return false; } };
-  const hideNotice = () => { notice.classList.remove("show"); setTimeout(() => { notice.hidden = true; }, 600); try { sessionStorage.setItem("lucid-notice", "1"); } catch (_) {} };
-  /* a phone is a narrow window, or a touch screen whose short side is phone sized (some in app browsers report a wide window) */
-  const isPhone = () => matchMedia("(max-width: 720px)").matches || (matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) < 600);
-  if (isPhone() && !seen()){
-    setTimeout(() => { notice.hidden = false; requestAnimationFrame(() => requestAnimationFrame(() => notice.classList.add("show"))); }, 1200);
-  }
-  document.getElementById("noticeOk").addEventListener("click", hideNotice);
-  document.getElementById("noticeCopy").addEventListener("click", async e => {
-    const b = e.currentTarget, url = location.href.split("#")[0];
-    let ok = false;
-    try { await navigator.clipboard.writeText(url); ok = true; } catch (_) {
-      const t = document.createElement("textarea"); t.value = url; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0";
-      document.body.appendChild(t); t.select(); try { ok = document.execCommand("copy"); } catch (_) {} t.remove();
-    }
-    if (ok){ b.textContent = "Link copied"; setTimeout(hideNotice, 1100); }
-  });
 
   /* copy the email address, with a tick and a short "Copied" note */
   const copyBtn = document.getElementById("copyMail"), copyStatus = document.getElementById("copyStatus");
