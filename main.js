@@ -542,6 +542,43 @@ function t(t,i,e){return Math.max(t,Math.min(i,e))}var i=class{isRunning=!1;valu
   }
   document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
 
+  /* scene navigator: dots on the right edge, keyboard stepping, works on touch too */
+  const sceneNav = document.createElement("nav");
+  sceneNav.className = "scenes"; sceneNav.setAttribute("aria-label", "Jump to section");
+  const dots = marks.map(([k, t]) => {
+    const d = document.createElement("button");
+    d.type = "button"; d.className = "sc-dot"; d.dataset.k = k; d.setAttribute("aria-label", t);
+    d.innerHTML = "<em>" + t + "</em><i></i>";
+    d.addEventListener("click", () => go(k));
+    sceneNav.appendChild(d);
+    return d;
+  });
+  stage.appendChild(sceneNav);
+  let cur = -1;
+  function currentScene(){
+    const time = tl.progress() * total;
+    let idx = 0;
+    marks.forEach(([k], i) => { if (time >= tl.labels[k] - 0.6) idx = i; });
+    return idx;
+  }
+  function paintScene(){
+    const i = currentScene();
+    if (i !== cur){ cur = i; dots.forEach((d, n) => d.classList.toggle("on", n === i)); }
+    sceneNav.classList.toggle("hide", tl.progress() * total < 2.5);
+  }
+  lenis.on("scroll", paintScene); paintScene();
+  window.addEventListener("keydown", e => {
+    if (document.documentElement.classList.contains("cs-lock") || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    const next = e.key === "ArrowDown" || e.key === "PageDown", prev = e.key === "ArrowUp" || e.key === "PageUp";
+    if (!next && !prev && e.key !== "Home" && e.key !== "End") return;
+    e.preventDefault();
+    let i = currentScene();
+    if (e.key === "Home") i = 0; else if (e.key === "End") i = marks.length - 1;
+    else if (next) i = Math.min(marks.length - 1, i + 1); else i = Math.max(0, i - 1);
+    go(marks[i][0]);
+  });
+
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.has("jump")) {
     const k = urlParams.get("jump");

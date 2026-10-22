@@ -432,3 +432,15 @@ html.rm .work-prog{display:none}
 .grain .g3{display:none}
 @media (pointer:coarse),(max-width:900px){.grain .g2{display:none}.grain .g1{mix-blend-mode:normal;opacity:.12}.dust{opacity:.8}}
 html{overscroll-behavior:none}
+
+/* scene navigator */
+.scenes{position:absolute;right:clamp(8px,1.4vw,20px);top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:2px;transition:opacity .4s}
+.scenes.hide{opacity:0;pointer-events:none}
+.sc-dot{position:relative;display:flex;align-items:center;justify-content:flex-end;gap:10px;height:28px;min-width:28px;padding:0 7px;border:0;background:none;color:var(--fg);cursor:pointer}
+.sc-dot i{display:block;width:9px;height:9px;border-radius:50%;border:2px solid var(--fg);opacity:.6;transition:transform .25s,background .25s,opacity .25s}
+.sc-dot em{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:0;transform:translateX(6px);transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
+.sc-dot:hover em,.sc-dot:focus-visible em,.sc-dot.on em{opacity:1;transform:none}
+.sc-dot:hover i{opacity:1}
+.sc-dot.on i{background:#F2C230;border-color:#F2C230;opacity:1;transform:scale(1.35)}
+@media (max-width:720px){.sc-dot em{display:none}.sc-dot{height:26px}.sc-dot:hover em,.sc-dot.on em{display:none}}
+html.rm .scenes{display:none}
